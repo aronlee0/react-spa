@@ -7,6 +7,8 @@ var BellOnBundlerErrorPlugin = require('bell-on-bundler-error-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
+var OpenBrowserPlugin = require('open-browser-webpack-plugin'); //自动打开浏览器插件
+
 // var myloader = require('./Myloader');
 console.log(__dirname);
 const currentPath = process.cwd();
@@ -24,6 +26,15 @@ var routeComponentRegex = /views\/([^\/]+\/[^\/]+).js$/
 
 var config = {
   watch: true,
+  // 配置服务器
+  devServer: {
+      historyApiFallback: true,
+      hot: true,
+      inline: true,
+      progress: true,
+      contentBase: "./dist", //最好写上，否则报错，难道这里是一个坑？
+      port: 8798
+  },
   entry: entry,
   debug: true,
   devtool: 'source-map',
@@ -122,7 +133,9 @@ var config = {
     new webpack.optimize.CommonsChunkPlugin({
         name: ['common','react'],
         minChunks: Infinity
-    })
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new OpenBrowserPlugin({ url: 'http://localhost:8888/index.html' })
   ]
 
 };
