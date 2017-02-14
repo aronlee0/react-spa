@@ -6,7 +6,6 @@ export default class PageHome extends Component{
         return(
             <div>
                 <div>ContractList</div>
-                
             </div>
         );
     }

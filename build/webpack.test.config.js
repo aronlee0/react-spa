@@ -81,7 +81,7 @@ var config = {
                 test: /\.css$/,
                 loader: ExtractTextPlugin.extract({
                     fallback: "style-loader",
-                    use: "css-loader"
+                    use: "happypack/loader?id=css"
                 })
             },
             {
