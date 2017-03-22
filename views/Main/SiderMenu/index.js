@@ -1,6 +1,6 @@
 import React,{ Component } from 'react';
-import Menu from 'antd/lib/menu';
-import Icon from 'antd/lib/icon';
+import { Menu } from 'antd';
+import { Icon } from 'antd';
 const { SubMenu } = Menu;
 
 export default class SiderMenu extends Component{

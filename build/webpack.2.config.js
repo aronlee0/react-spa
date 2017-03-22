@@ -1,36 +1,46 @@
-import webpack from 'webpack';
-import os from "os";
-import HappyPack from "happypack";
-import ProgressBarPlugin from 'progress-bar-webpack-plugin';
-import CleanWebpackPlugin from 'clean-webpack-plugin';
-import WebpackNotifierPlugin from 'webpack-build-notifier';
-import ExtractTextPlugin from "extract-text-webpack-plugin";
-import chalk from 'chalk';
-import autoprefixer from 'autoprefixer';
-import cssgrace from 'cssgrace';
-import extend from 'extend';
-import path from 'path';
-import { versionType, uploadDir } from './config.json';
+import webpack from 'webpack'
+import moment from "moment"
+import os from "os"
+import HappyPack from "happypack"
+import ProgressBarPlugin from 'progress-bar-webpack-plugin'
+import CopyWebpackPlugin from 'copy-webpack-plugin'
+import CleanWebpackPlugin from 'clean-webpack-plugin'
+import WebpackNotifierPlugin from 'webpack-build-notifier'
+import ExtractTextPlugin from "extract-text-webpack-plugin"
+import chalk from 'chalk'
+import autoprefixer from 'autoprefixer'
+import cssgrace from 'cssgrace'
+import extend from 'extend'
+import path from 'path'
 
-import { alias, entries } from "./files_config";
+import alias from './configuration/alias.js'
+
+var entry = {
+//   react: ['react','react-dom'],
+  common: [
+    'antd',
+    'react',
+    'react-dom',
+    './views/index.js'
+  ]
+};
 
 const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 
-//切换打包方式为manifest，给后端读取json文件
-const ManifestPlugin = require('./plugins/manifest.js');
-
-const NodeEnv = process.env.NODE_ENV;
 
 // https://github.com/webpack/loader-utils/issues/56
-// process.traceDeprecation = true;
+process.traceDeprecation = true;
 
 export default {
     watch: true,
-    entry: entries,
+    watchOptions: {
+        aggregateTimeout: 800
+    },
+    entry: entry,
     devtool: 'source-map',
     output: {
         path: `${process.cwd()}/dist`,
-        publicPath: '/',
+        publicPath: '/react-spa/',
         filename: '[name].js',
         chunkFilename: '[name].[chunkhash:7].js', //非入口文件的命名规则
     },
@@ -45,30 +55,30 @@ export default {
                 use: [
                     "react-hot-loader",
                     {
-                        loader: "babel-loader",
+                        loader: "babel-loader?cacheDirectory"/*,
                         options: {
                             cacheDirectory: true
-                        }
+                        }*/
                     }
                 ]
             },
             {
                 test: /\.css$/,
-                use: ExtractTextPlugin.extract({
+                loader: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: ['css-loader', 'postcss-loader']
                 })
             },
             {
                 test: /\.less$/,
-                use: ExtractTextPlugin.extract({
+                loader: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: ['css-loader', 'postcss-loader', 'less-loader']
                 })
             },
             {
                 test: /\.scss$/,
-                use: ExtractTextPlugin.extract({
+                loader: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: ['css-loader', 'postcss-loader', 'sass-loader']
                 })
@@ -76,7 +86,7 @@ export default {
             {
                 test: /\.html/,
                 loader: "html-loader",
-                query: {
+                options: {
                     minimize: false,
                     attrs:false
                 }
@@ -85,7 +95,7 @@ export default {
                 test: /\.(png|jpg|gif|woff|woff2|ttf|eot|svg|swf)$/,
                 use: [
                     {
-                        loader: "file-loader",
+                        loader: "file-loader?name=[name]_[sha512:hash:base64:7].[ext]",
                         options: {
                             name: '[name]_[sha512:hash:base64:7].[ext]'
                         }
@@ -111,15 +121,21 @@ export default {
             summary: false,
             summaryContent: false,
             customSummary (buildTime) {
-                process.stdout.write(`-------------^__^-----编译成功,共使用${buildTime}---------\n`)
+                process.stdout.write(`=====${chalk.green.bold(`[ built in ${buildTime} ]`)}=====`)
             }
         }),
+        new CopyWebpackPlugin([
+            {
+                from: 'views/index.html',
+                to: 'index.html'
+            }
+        ],{}),
         new ExtractTextPlugin({
             filename: "[name].css",
             disable: false,
             allChunks: true
         }),
-        new CleanWebpackPlugin(['dist', uploadDir], {
+        new CleanWebpackPlugin(['dist'], {
             root: `${process.cwd()}`
         }),
         new webpack.LoaderOptionsPlugin({
@@ -134,23 +150,15 @@ export default {
             }
         }),
         new webpack.ProvidePlugin({
-            $: 'jquery',
-            jQuery: 'jquery',
-            _: 'underscore',
-            global: 'global',
-            iwjw: 'iwjw',
-            smallnote:'smallnote',
             React: 'react',
             ReactDOM: 'react-dom',
-            antd: 'antd',
-            store:'store'
+            Antd: 'antd'
         }),
         new WebpackNotifierPlugin({
             title: 'Webpack 编译成功',
             contentImage: path.resolve(process.cwd(), './global/img/logo.png'),
             alwaysNotify: true
         }),
-        // new ExtractTextPlugin("[name].css"),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'common',
             minChunks: Infinity
@@ -162,18 +170,6 @@ export default {
         // }),
         // https://github.com/glenjamin/webpack-hot-middleware#installation--usage
         // new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoEmitOnErrorsPlugin(),
-        //manifest上传方式配置，这边先不用 versionType==2
-        new ManifestPlugin({
-            versionFiles:[
-                'common.js',
-                'index.js',
-                'common.css',
-                'index.css'
-            ],
-            hashNum:7,
-            //是否抽取css/js资源加版本号，这块相当于兼容versionType==0的情况
-            extractJsCss:false
-        })
+        new webpack.NoEmitOnErrorsPlugin()
     ]
 }

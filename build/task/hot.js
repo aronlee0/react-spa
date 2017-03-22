@@ -5,10 +5,11 @@ import webpackHotMiddleware from 'webpack-hot-middleware';
 import httpProxyMiddleware from 'http-proxy-middleware';
 import ip from 'ip';
 import chalk from "chalk";
+// import indexHtml from "../../views/index.html"
 
-import { devConfig } from '../config.json';
+import { devPort } from '../config.json';
 
-import webpackConfigDev from '../webpack.dev.conf';
+import webpackConfigDev from '../webpack.config';
 
 const webpackConfig = webpackConfigDev;
 
@@ -29,7 +30,9 @@ const devMiddleware = webpackDevMiddleware(webpackCompiler, {
     serverSideRender: true,
     publicPath: webpackCompiler.options.output.publicPath,
     noInfo: true,
+    hot: true,
     quiet: false,
+    inline: true,
     stats: {
         colors: true,
         hash: false,
@@ -50,39 +53,13 @@ const devServer = express();
 
 devServer.use(devMiddleware);
 devServer.use(hotMiddleware);
-devServer.get('/', function (req, res) {
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>品牌公寓-房东</title>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <meta name="renderer" content="webkit">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        <link rel="shortcut icon" href="//files.iwjw.com/icon/favicon.ico" type="image/x-icon">
-        <link rel="stylesheet" href="common.css">
-        <link rel="stylesheet" href="index.css">
-    </head>
-    <body>
-    <!--react spa-->
-    <div id="root"></div>
-    <script type="text/javascript">
-        window.pageConfig={
-            siteUrl:location.href,
-            user:{
-                hasUser: true
-            }
-        }
-    </script>
-    <script src="common.js"></script>
-    <script src="index.js"></script>
-    </body>
-    </html>
-  `);
-});
+
+// devServer.use('/', express.static('dist'));
 
 // devServer.use('/global', express.static('alc/global'));
+devServer.get('/',( req, res ) => {
+    res.send("nihao")
+});
 
 
 // 对于IE兼容性测试时的API跨域问题，使用该代理解决
@@ -93,7 +70,7 @@ devServer.use(httpProxyMiddleware('**/*.action', {
     changeOrigin: true
 }))
 const nohot = false;
-devServer.listen(devConfig.port, function () {
+devServer.listen(devPort, function () {
     process.stdout.clearLine()
     process.stdout.cursorTo(0)
     console.log(`dev${nohot&&'nohot'||''}-server at ${chalk.magenta.underline(`http://${ip.address()}:${this.address().port}/`)}`)

@@ -1,5 +1,5 @@
 import React,{ Component } from 'react';
-import Layout from 'antd/lib/layout';
+import { Layout } from 'antd';
 const { Header, Footer, Sider, Content } = Layout;
 
 import SiderMenu from './SiderMenu';
