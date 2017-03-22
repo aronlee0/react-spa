@@ -1,0 +1,7 @@
+{
+    "devPort": 3002,
+    "uploadDir": "zip",
+    "staticPublicPath": {
+        "dev": "http://127.0.0.1:8888/react-spa/"
+    }
+}
