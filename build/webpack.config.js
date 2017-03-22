@@ -3,30 +3,22 @@ import moment from "moment"
 import os from "os"
 import HappyPack from "happypack"
 import ProgressBarPlugin from 'progress-bar-webpack-plugin'
-import CopyWebpackPlugin from 'copy-webpack-plugin'
 import CleanWebpackPlugin from 'clean-webpack-plugin'
 import WebpackNotifierPlugin from 'webpack-build-notifier'
 import ExtractTextPlugin from "extract-text-webpack-plugin"
+import CopyWebpackPlugin from 'copy-webpack-plugin'
 import chalk from 'chalk'
 import autoprefixer from 'autoprefixer'
 import cssgrace from 'cssgrace'
 import extend from 'extend'
 import path from 'path'
+import { uploadDir } from './config.json'
 
-import alias from './configuration/alias.js'
-
-var entries = {
-//   react: ['react','react-dom'],
-  common: [
-    'antd',
-    'react',
-    'react-dom',
-    './views/index.js'
-  ]
-};
+import { alias, entry, copy } from "./entires_alias"
 
 const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 
+// const NodeEnv = process.env.NODE_ENV;
 
 // https://github.com/webpack/loader-utils/issues/56
 process.traceDeprecation = true;
@@ -36,7 +28,7 @@ export default {
     watchOptions: {
         aggregateTimeout: 800
     },
-    entry: entries,
+    entry: entry,
     devtool: 'source-map',
     output: {
         path: `${process.cwd()}/dist`,
@@ -64,27 +56,24 @@ export default {
             },
             {
                 test: /\.css$/,
-                use: ['style-loader', 'css-loader', 'postcss-loader']
-                // loader: ExtractTextPlugin.extract({
-                //     fallback: 'style-loader',
-                //     use: ['css-loader', 'postcss-loader']
-                // })
+                loader: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: ['css-loader', 'postcss-loader']
+                })
             },
             {
                 test: /\.less$/,
-                use: ['style-loader', 'css-loader', 'postcss-loader', 'less-loader']
-                // loader: ExtractTextPlugin.extract({
-                //     fallback: 'style-loader',
-                //     use: ['css-loader', 'postcss-loader', 'less-loader']
-                // })
+                loader: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: ['css-loader', 'postcss-loader', 'less-loader']
+                })
             },
             {
                 test: /\.scss$/,
-                use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
-                // loader: ExtractTextPlugin.extract({
-                //     fallback: 'style-loader',
-                //     use: ['css-loader', 'postcss-loader', 'sass-loader']
-                // })
+                loader: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: ['css-loader', 'postcss-loader', 'sass-loader']
+                })
             },
             {
                 test: /\.html/,
@@ -124,21 +113,17 @@ export default {
             summary: false,
             summaryContent: false,
             customSummary (buildTime) {
-                process.stdout.write(`=====${chalk.green.bold(`[ built in ${buildTime} ]`)}=====`)
+                const now = moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
+                process.stdout.write(`=====[ it took ${chalk.blue(buildTime)} to build at ${chalk.blue(now)} ]=====`)
             }
         }),
-        new CopyWebpackPlugin([
-            {
-                from: 'views/index.html',
-                to: 'index.html'
-            }
-        ],{}),
+        new CopyWebpackPlugin(copy),
         new ExtractTextPlugin({
             filename: "[name].css",
             disable: false,
             allChunks: true
         }),
-        new CleanWebpackPlugin(['dist'], {
+        new CleanWebpackPlugin(['dist', uploadDir], {
             root: `${process.cwd()}`
         }),
         new webpack.LoaderOptionsPlugin({
@@ -153,9 +138,13 @@ export default {
             }
         }),
         new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+            _: 'underscore',
             React: 'react',
             ReactDOM: 'react-dom',
-            antd: 'antd'
+            antd: 'antd',
+            // store:'store'
         }),
         new WebpackNotifierPlugin({
             title: 'Webpack 编译成功',
@@ -163,14 +152,9 @@ export default {
             alwaysNotify: true
         }),
         new webpack.optimize.CommonsChunkPlugin({
-            name: 'common',
+            name: ['common','react'],
             minChunks: Infinity
         }),
-        // new webpack.DefinePlugin({
-        //     'process.env': {
-        //         NODE_ENV: process.env['npm_config_argv'].match('dev_base')?'"development"':'"production"'
-        //     }
-        // }),
         // https://github.com/glenjamin/webpack-hot-middleware#installation--usage
         // new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin()

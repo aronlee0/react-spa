@@ -4,7 +4,7 @@ const entry = {
     common: [
         'jquery',
         'underscore',
-        './views/index.js'
+        './src/index.js'
     ]
 }
 export default entry

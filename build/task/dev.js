@@ -1,5 +1,5 @@
 import webpack from "webpack";
-import webpackConf from "../webpack.3.config.js";
+import webpackConf from "../webpack.config.js";
 import { staticPublicPath } from "../config.json";
 
 webpackConf.output.publicPath = staticPublicPath["dev"] || "/";

@@ -7,6 +7,7 @@ import SiderMenu from './SiderMenu';
 export default class PageHome extends Component{
     constructor(props){
         super(props);
+        console.log(props);
     }
     render(){
         return(
