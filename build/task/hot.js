@@ -9,7 +9,7 @@ import chalk from "chalk";
 
 import { devPort } from '../config.json';
 
-import webpackConfigDev from '../webpack.config';
+import webpackConfigDev from '../webpack.config.js';
 
 const webpackConfig = webpackConfigDev;
 
@@ -24,6 +24,9 @@ Object.keys(entry).forEach((name) => {
     }
 })
 
+const HotModuleReplacementPlugin = new webpack.HotModuleReplacementPlugin()
+const NamedModulesPlugin = new webpack.NamedModulesPlugin()
+webpackConfig.plugins = webpackConfig.plugins.concat([ HotModuleReplacementPlugin, NamedModulesPlugin ]);
 
 const webpackCompiler = webpack(webpackConfig)
 const devMiddleware = webpackDevMiddleware(webpackCompiler, {
