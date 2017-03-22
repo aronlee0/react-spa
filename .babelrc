@@ -1,32 +1,29 @@
 {
-    "presets": [
-        // https://github.com/babel/babel-preset-env
-        // https://segmentfault.com/a/1190000005112677
-        // http://www.2ality.com/2015/12/babel6-loose-mode.html
-        // ["env", {
-        //     "targets": {
-        //         "browsers": ['> 5%', 'last 2 versions', 'IE >= 8']
-        //     },
-        //     // "modules": false, // by default
-        //     "loose": true
-        // }],
-        // ["es2015",{
-        //     "modules": false
-        // }],
-        "es2015",
-        "react",
-        "stage-0"
-    ],
-    "plugins": [
-        ["import",{
-          "libraryName": "antd",
-          "libraryDirectory": "lib",
-          "style": true
-        }],
-        "transform-decorators-legacy",
-    	"add-module-exports",
-        "transform-object-assign",
-		"transform-es3-property-literals",
-		"transform-es3-member-expression-literals"
-    ]
+  "presets": [
+      "es2015",
+    // ["es2015", {"modules": false}],
+    // webpack 现在已经支持原生的 import 语句了, 并且将其运用在 tree-shaking 特性上
+
+    "stage-2",
+    // 指定要启用的语言规范级别
+    // Stage 2 代表“草案”，4 是“已完成”，0 是“稻草人(strawman)”。
+    // 详情查看 https://tc39.github.io/process-document/
+
+    "react"
+    // 转译 React 组件为 JavaScript 代码
+  ],
+  "plugins": [
+    "react-hot-loader/babel",
+    // 开启 React 代码的模块热替换(HMR)
+    ["import",{
+        "libraryName": "antd",
+        "libraryDirectory": "lib",
+        "style": true
+    }],
+    "transform-decorators-legacy",
+    "add-module-exports",
+    "transform-object-assign",
+    "transform-es3-property-literals",
+    "transform-es3-member-expression-literals"
+  ]
 }

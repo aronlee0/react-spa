@@ -1,0 +1,32 @@
+{
+    "presets": [
+        // https://github.com/babel/babel-preset-env
+        // https://segmentfault.com/a/1190000005112677
+        // http://www.2ality.com/2015/12/babel6-loose-mode.html
+        // ["env", {
+        //     "targets": {
+        //         "browsers": ['> 5%', 'last 2 versions', 'IE >= 8']
+        //     },
+        //     // "modules": false, // by default
+        //     "loose": true
+        // }],
+        // ["es2015",{
+        //     "modules": false
+        // }],
+        "es2015",
+        "react",
+        "stage-0"
+    ],
+    "plugins": [
+        ["import",{
+          "libraryName": "antd",
+          "libraryDirectory": "lib",
+          "style": true
+        }],
+        "transform-decorators-legacy",
+    	"add-module-exports",
+        "transform-object-assign",
+		"transform-es3-property-literals",
+		"transform-es3-member-expression-literals"
+    ]
+}

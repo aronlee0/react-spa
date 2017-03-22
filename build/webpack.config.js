@@ -29,7 +29,7 @@ export default {
         aggregateTimeout: 800
     },
     entry: entry,
-    devtool: 'source-map',
+    devtool: 'cheap-eval-source-map',
     output: {
         path: `${process.cwd()}/dist`,
         publicPath: '/',
@@ -45,7 +45,7 @@ export default {
                 test: /\.js[x]?$/,
                 exclude: [/node_modules/,/global\/lib\//],
                 use: [
-                    "react-hot-loader",
+                    // "react-hot-loader",
                     {
                         loader: "babel-loader?cacheDirectory"/*,
                         options: {
@@ -58,21 +58,27 @@ export default {
                 test: /\.css$/,
                 loader: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
-                    use: ['css-loader', 'postcss-loader']
+                    use: [{
+                        loader: 'css-loader?modules'
+                    }, 'postcss-loader']
                 })
             },
             {
                 test: /\.less$/,
                 loader: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
-                    use: ['css-loader', 'postcss-loader', 'less-loader']
+                    use: [{
+                        loader: 'css-loader?modules'
+                    }, 'postcss-loader', 'less-loader']
                 })
             },
             {
                 test: /\.scss$/,
                 loader: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
-                    use: ['css-loader', 'postcss-loader', 'sass-loader']
+                    use: [{
+                        loader: 'css-loader?modules'
+                    }, 'postcss-loader', 'sass-loader']
                 })
             },
             {
@@ -140,11 +146,7 @@ export default {
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',
-            _: 'underscore',
-            React: 'react',
-            ReactDOM: 'react-dom',
-            antd: 'antd',
-            // store:'store'
+            _: 'underscore'
         }),
         new WebpackNotifierPlugin({
             title: 'Webpack 编译成功',

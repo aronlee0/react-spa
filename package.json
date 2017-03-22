@@ -4,13 +4,10 @@
   "description": "react & antd demo",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=development babel-node ./build/task/dev.js",
     "build": "NODE_ENV=production babel-node ./build/task/build.js",
     "hot": "NODE_ENV=development babel-node ./build/task/hot.js",
-    "sb": "webpack --progress --display-reasons  --config ./build/webpack.sb.config.js",
-    "start": "webpack-dev-server --progress --hot --colors --open --config ./build/webpack.test.config.js",
-    "beta": "webpack --progress --display-reasons  --config ./build/webpack.test.config.js"
+    "start": "NODE_ENV=development babel-node ./build/task/devServer.js"
   },
   "author": "aron_lee",
   "license": "ISC",
@@ -39,7 +36,8 @@
   "devDependencies": {
     "autoprefixer": "^6.7.6",
     "babel-cli": "^6.18.0",
-    "babel-loader": "^6.4.0",
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-import": "^1.1.0",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
@@ -48,9 +46,10 @@
     "babel-plugin-transform-es3-property-literals": "^6.8.0",
     "babel-plugin-transform-object-assign": "^6.8.0",
     "babel-preset-env": "0.0.7",
-    "babel-preset-es2015": "^6.13.2",
-    "babel-preset-react": "^6.16.0",
+    "babel-preset-es2015": "^6.24.0",
+    "babel-preset-react": "^6.23.0",
     "babel-preset-stage-0": "^6.16.0",
+    "babel-preset-stage-2": "^6.22.0",
     "chalk": "^1.1.3",
     "clean-webpack-plugin": "^0.1.14",
     "copy-webpack-plugin": "^4.0.0",
@@ -76,7 +75,7 @@
     "postcss-loader": "^1.3.3",
     "progress-bar-webpack-plugin": "^1.9.0",
     "promptly": "^2.1.0",
-    "react-hot-loader": "^1.3.1",
+    "react-hot-loader": "^3.0.0-beta.6",
     "redux-form": "^5.3.4",
     "redux-thunk": "^2.1.0",
     "request": "^2.80.0",
@@ -86,6 +85,7 @@
     "webpack": "^2.2.1",
     "webpack-build-notifier": "^0.1.13",
     "webpack-dev-middleware": "^1.8.4",
+    "webpack-dev-server": "^2.4.2",
     "webpack-hot-middleware": "^2.13.1",
     "zip-webpack-plugin": "^0.1.0"
   }
