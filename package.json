@@ -7,7 +7,6 @@
     "dev": "NODE_ENV=development babel-node ./build/task/dev.js",
     "build": "NODE_ENV=production babel-node ./build/task/build.js",
     "hot": "NODE_ENV=development babel-node ./build/task/hot.js",
-    "hot1": "NODE_ENV=development babel-node ./build/task/hot_default.js",
     "start": "NODE_ENV=development babel-node ./build/task/devServer.js"
   },
   "author": "aron_lee",
