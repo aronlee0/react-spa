@@ -1,42 +1,67 @@
-import express from 'express';
-import webpack from 'webpack';
-import webpackDevMiddleware from 'webpack-dev-middleware';
-import webpackHotMiddleware from 'webpack-hot-middleware';
-import httpProxyMiddleware from 'http-proxy-middleware';
-import ip from 'ip';
-import chalk from "chalk";
-// import indexHtml from "../../views/index.html"
+import express from 'express'
+import ip from 'ip'
+import chalk from 'chalk'
+import webpack from 'webpack'
+import webpackDevMiddleware from 'webpack-dev-middleware'
+import webpackHotMiddleware from 'webpack-hot-middleware'
+import webpackConf  from '../webpack.config.hmr'
+import { staticPublicPath } from '../config.json'
 
-import { devPort } from '../config.json';
+// const publicPath = staticPublicPath["dev"] || "/"
+// webpackConf.output.publicPath = publicPath
 
-import webpackConfigDev from '../webpack.config.js';
 
-const webpackConfig = webpackConfigDev;
+const additional = ['webpack-hot-middleware/client?noInfo=true&reload=true']
 
-const hotclient = ['webpack-hot-middleware/client?noInfo=true&reload=true']
-const entry = webpackConfig.entry
+let entry = webpackConf.entry
 Object.keys(entry).forEach((name) => {
     const value = entry[name]
     if (Array.isArray(value)) {
-        value.unshift(...hotclient)
+        value.unshift(...additional)
     } else {
-        entry[name] = [...hotclient, value]
+        entry[name] = [...additional, value]
     }
 })
 
 const HotModuleReplacementPlugin = new webpack.HotModuleReplacementPlugin()
 const NamedModulesPlugin = new webpack.NamedModulesPlugin()
-webpackConfig.plugins = webpackConfig.plugins.concat([ HotModuleReplacementPlugin, NamedModulesPlugin ]);
+webpackConf.plugins = webpackConf.plugins.concat([ HotModuleReplacementPlugin, NamedModulesPlugin ]);
 
-const webpackCompiler = webpack(webpackConfig)
-const devMiddleware = webpackDevMiddleware(webpackCompiler, {
-    serverSideRender: true,
-    publicPath: webpackCompiler.options.output.publicPath,
-    noInfo: true,
-    hot: true,
-    quiet: false,
-    inline: true,
-    stats: {
+const app = express()
+const compiler = webpack(webpackConf)
+
+app.use(webpackDevMiddleware(compiler, {
+
+
+    publicPath: webpackConf.output.publicPath,
+
+	noInfo: true,
+	// display no info to console (only warnings and errors)
+
+	quiet: false,
+	// display nothing to the console
+
+	// lazy: true,
+	// switch into lazy mode
+	// that means no watching, but recompilation on every request
+
+	// watchOptions: {
+	// 	aggregateTimeout: 300,
+	// 	poll: true
+	// },
+	// watch options (only lazy: false)
+
+	// publicPath: "/src/",
+	// public path to bind the middleware to
+	// use the same as in webpack
+	
+	// index: "index.html",
+	// the index path for web server
+
+	// headers: { "X-Custom-Header": "yes" },
+	// custom headers
+
+	stats: {
         colors: true,
         hash: false,
         version: false,
@@ -44,37 +69,24 @@ const devMiddleware = webpackDevMiddleware(webpackCompiler, {
         assets: false,
         chunks: false,
         children: false
-    }
-})
-const hotMiddleware = webpackHotMiddleware(webpackCompiler, {
-    log: false
-})
+    },
+	// options for formating the statistics
 
-const devServer = express();
+	// reporter: null,
+	// Provide a custom reporter to change the way how logs are shown.
 
-
-
-devServer.use(devMiddleware);
-devServer.use(hotMiddleware);
-
-// devServer.use('/', express.static('dist'));
-
-// devServer.use('/global', express.static('alc/global'));
-devServer.get('/',( req, res ) => {
-    res.send("nihao")
-});
-
-
-// 对于IE兼容性测试时的API跨域问题，使用该代理解决
-// 代理API，可以在config/mine.js中修改成你想要的代理目标
-devServer.use(httpProxyMiddleware('**/*.action', {
-    logLevel: 'silent',
-    target: "http://127.0.0.1:7002",
-    changeOrigin: true
+	// serverSideRender: false
+	// Turn off the server-side rendering mode. See Server-Side Rendering part for more info.
 }))
-const nohot = false;
-devServer.listen(devPort, function () {
+
+app.use(webpackHotMiddleware(compiler, {
+    log: false,
+    // path: "/dist",
+    // heartbeat: 2000
+}))
+
+app.listen("3003", function () {
     process.stdout.clearLine()
     process.stdout.cursorTo(0)
-    console.log(`dev${nohot&&'nohot'||''}-server at ${chalk.magenta.underline(`http://${ip.address()}:${this.address().port}/`)}`)
+    console.log(`dev-server at ${chalk.magenta.underline(`http://${ip.address()}:${this.address().port}`)}`)
 })

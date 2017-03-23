@@ -56,30 +56,15 @@ export default {
             },
             {
                 test: /\.css$/,
-                loader: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: [{
-                        loader: 'css-loader'
-                    }, 'postcss-loader']
-                })
+                use: ['style-loader','css-loader','postcss-loader']
             },
             {
                 test: /\.less$/,
-                loader: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: [{
-                        loader: 'css-loader'
-                    }, 'postcss-loader', 'less-loader']
-                })
+                use: ['style-loader','css-loader','postcss-loader', 'less-loader']
             },
             {
                 test: /\.scss$/,
-                loader: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: [{
-                        loader: 'css-loader'
-                    }, 'postcss-loader', 'sass-loader']
-                })
+                use: ['style-loader','css-loader','postcss-loader', 'sass-loader']
             },
             {
                 test: /\.html/,
